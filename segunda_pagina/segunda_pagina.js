@@ -1,19 +1,19 @@
-// Animação de Loading
+
         window.addEventListener('load', function() {
-            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingScreen = document.getElementById('loadingScreen');           //  Animação //
             const magicParticles = document.getElementById('magicParticles');
             
-            // Criar partículas mágicas
+            
             for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
+                particle.style.left = Math.random() * 100 + '%';               
                 particle.style.top = Math.random() * 100 + '%';
                 particle.style.animationDelay = Math.random() * 3 + 's';
                 magicParticles.appendChild(particle);
             }
             
-            // Esconder loading após 2.5 segundos
+            
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
                 setTimeout(() => {
@@ -22,7 +22,7 @@
             }, 2500);
         });
 
-        // Sistema de Áudio de Fundo
+        
         const backgroundMusic = document.getElementById('backgroundMusic');
         const muteBtn = document.getElementById('muteBtn');
         let isMuted = true;
@@ -40,7 +40,7 @@
             }
         });
 
-        // Sistema de Podcasts
+        
         const podcasts = [
             {
                 title: 'Episódio 1: Os Fundamentos de HTML',
@@ -92,21 +92,21 @@
             document.getElementById('playPauseBtn').textContent = '▶️ Play';
         }
 
-        // Navegação suave
+        
         window.scrollToSection = function(sectionId) {
             const element = document.getElementById(sectionId);
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
-        // Navegar para página da Sonserina
+    
         window.goToSlytherin = function() {
             alert('A página da Sonserina está sendo preparada... A ambição aguarda! 🐍⚡');
         };
 
-        // Efeito de partículas mágicas no mouse
+        
         document.addEventListener('mousemove', function(e) {
             if (Math.random() > 0.95) {
-                const spark = document.createElement('div');
+                const spark = document.createElement('div');        // Particulas do mouse //
                 spark.style.position = 'fixed';
                 spark.style.left = e.clientX + 'px';
                 spark.style.top = e.clientY + 'px';

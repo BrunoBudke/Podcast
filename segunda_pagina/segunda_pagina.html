@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grifinória - Curiosidades sobre Desenvolvimento Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="segunda_pagina.css">
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="magic-particles" id="magicParticles"></div>
+        <div class="wand"></div>
+        <div class="loading-text">Carregando a Magia...</div>
+    </div>
+
+    <header class="header" id="inicio">
+        <div class="shield">🦁</div>
+        <h1>GRIFINÓRIA</h1>
+        <p class="subtitle">Curiosidades Mágicas do Desenvolvimento Web</p>
+    </header>
+
+    <audio id="backgroundMusic" loop>
+        <source src="school-of-magic-inspired-by-harry-potter-289617.mp3" type="audio/mpeg">
+    </audio>
+
+    <button class="mute-btn" id="muteBtn">🔊 Música</button>
+
+    <nav>
+        <button class="nav-btn" onclick="scrollToSection('inicio')">🏠 Início</button>
+        <button class="nav-btn" onclick="scrollToSection('podcasts')">🎙️ Podcasts</button>
+        <button class="nav-btn" onclick="scrollToSection('historias')">📖 Histórias</button>
+        <button class="nav-btn slytherin-btn" onclick="goToSlytherin()">🐍 Entrar na Sonserina (em breve)</button>
+    </nav>
+
+    <div class="container">
+        <section id="curiosidades">
+            <h2>✨ Curiosidades Mágicas</h2>
+            
+            <div class="curiosity-card">
+                <h4>🔮 HTML - A Fundação dos Feitiços</h4>
+                <p>HTML significa HyperText Markup Language e foi criado por Tim Berners-Lee em 1991. Assim como os feitiços básicos que todo bruxo aprende em Hogwarts, HTML é a base de toda magia web! A primeira página web ainda está online desde 1991.</p>
+            </div>
+
+            <div class="curiosity-card">
+                <h4>🎨 CSS - A Transfiguração Visual</h4>
+                <p>CSS (Cascading Style Sheets) foi proposto pela primeira vez em 1994 por Håkon Wium Lie. Assim como a professora McGonagall transforma objetos, CSS transforma páginas HTML simples em experiências visuais incríveis! A propriedade mais usada é 'color'.</p>
+            </div>
+
+            <div class="curiosity-card">
+                <h4>⚡ JavaScript - A Magia Interativa</h4>
+                <p>JavaScript foi criado em apenas 10 dias por Brendan Eich em 1995! Originalmente chamado de "Mocha", depois "LiveScript", e finalmente JavaScript. É a magia que traz vida às páginas web, como um feitiço Wingardium Leviosa que faz as coisas se moverem!</p>
+            </div>
+
+            <div class="curiosity-card">
+                <h4>🌟 Fato Curioso</h4>
+                <p>O símbolo "&lt;!DOCTYPE html&gt;" no topo de arquivos HTML é como o chapéu seletor - ele diz ao navegador qual "casa" (versão) de HTML usar. A versão HTML5 simplificou isso drasticamente!</p>
+            </div>
+        </section>
+
+        <section id="podcasts">
+            <h2>🎙️ Podcasts da Grifinória</h2>
+            
+            <div class="podcast-player">
+                <div class="podcast-title" id="podcastTitle">Episódio 1: Os Fundamentos de HTML</div>
+                <div class="podcast-info" id="podcastInfo">Duração: 15 minutos</div>
+                <div class="podcast-controls">
+                    <button class="control-btn" onclick="previousPodcast()">⏮️ Anterior</button>
+                    <button class="control-btn" id="playPauseBtn" onclick="togglePlayPause()">▶️ Play</button>
+                    <button class="control-btn" onclick="nextPodcast()">⏭️ Próximo</button>
+                </div>
+                <p style="margin-top: 20px; text-align: center; font-style: italic; opacity: 0.8;">
+                    <span id="podcastDescription">Descubra como HTML estrutura o mundo mágico da web, desde tags básicas até elementos semânticos avançados.</span>
+                </p>
+            </div>
+
+            <div style="margin-top: 40px; padding: 24px; background: rgba(211, 166, 37, 0.1); border-radius: 12px;">
+                <h3>📚 Episódios Disponíveis:</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(211, 166, 37, 0.3);">
+                        <strong style="color: #ffd700;">Episódio 1:</strong> Os Fundamentos de HTML
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(211, 166, 37, 0.3);">
+                        <strong style="color: #ffd700;">Episódio 2:</strong> CSS e a Arte da Estilização
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid rgba(211, 166, 37, 0.3);">
+                        <strong style="color: #ffd700;">Episódio 3:</strong> JavaScript: Dando Vida às Páginas
+                    </li>
+                    <li style="padding: 12px 0;">
+                        <strong style="color: #ffd700;">Episódio 4:</strong> Responsividade: Magia para Todos os Dispositivos
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="historias">
+            <h2>📖 Histórias Mágicas do Código</h2>
+
+            <div class="story-card">
+                <h4>A Lenda do Primeiro Bug</h4>
+                <p>Em 1947, Grace Hopper encontrou uma mariposa real travada em um computador Mark II, causando mau funcionamento. Ela colou o inseto no livro de registros com a nota "First actual case of bug being found" (Primeiro caso real de um bug sendo encontrado). Assim nasceu o termo "debugging"! Hoje, caçar bugs é tão essencial quanto um bruxo dominar o feitiço Expelliarmus.</p>
+            </div>
+
+            <div class="story-card">
+                <h4>A Guerra dos Navegadores</h4>
+                <p>Nos anos 90, Netscape e Internet Explorer travaram uma batalha épica pelo domínio da web - tão intensa quanto a rivalidade entre Grifinória e Sonserina! Cada um criava suas próprias "magias" (recursos proprietários), tornando o desenvolvimento web um verdadeiro desafio. Esta guerra moldou a web moderna e levou à criação dos padrões web que usamos hoje.</p>
+            </div>
+
+            <div class="story-card">
+                <h4>O Nascimento do CSS Flexbox</h4>
+                <p>Durante anos, os desenvolvedores lutaram com floats e tabelas para criar layouts - era como tentar fazer magia sem varinha! Então, em 2009, o CSS Flexbox foi proposto. Foi como descobrir um novo feitiço poderoso que simplificou o alinhamento e distribuição de elementos. Uma verdadeira revolução mágica no mundo do design web!</p>
+            </div>
+
+            <div class="story-card">
+                <h4>A Profecia do Dark Mode</h4>
+                <p>Profetizado por desenvolvedores noturnos por décadas, o Dark Mode finalmente se tornou um padrão universal. Como a marca das Trevas iluminando o céu, o modo escuro trouxe conforto aos olhos de milhões de bruxos e trouxas que programam até altas horas. Hoje, prefers-color-scheme é o feitiço CSS que detecta a preferência do usuário automaticamente!</p>
+            </div>
+        </section>
+    </div>
+
+    
+    <script src="segunda_pagina.js"></script>
+</body>
+</html>

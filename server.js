@@ -1,132 +1,118 @@
 // server.js
+
 const express = require('express');
-const fs = require('fs');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { Pool } = require('pg'); // <--- Importar o Pool do 'pg'
+// const bcrypt = require('bcrypt'); // <--- Adicionar (Opcional, mas recomendado para senhas)
 
 const app = express();
 const PORT = 3000;
-const DB_FILE = './database.json';
+// const DB_FILE = './database.json'; // <--- Remover
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Garante que o arquivo de "banco" exista
-if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify([]));
-}
+// --- Configuração do PostgreSQL ---
+const pool = new Pool({
+    user: 'seu_usuario',       // Seu usuário do PostgreSQL
+    host: 'localhost',         // Ou o endereço do seu servidor de DB
+    database: 'seu_banco',     // Nome do seu banco de dados
+    password: 'sua_senha',     // Sua senha
+    port: 5432,                // Porta padrão do PostgreSQL
+});
 
-// Rota de cadastro
-app.post('/api/register', (req, res) => {
+// Testar a conexão (opcional)
+pool.query('SELECT NOW()', (err, res) => {
+    if (err) {
+        console.error('Erro ao conectar ao PostgreSQL:', err);
+        // Considere sair do processo se a conexão for vital
+    } else {
+        console.log('Conectado ao PostgreSQL com sucesso!', res.rows[0]);
+    }
+});
+// ---------------------------------
+
+
+// --- Rota de Registro (/api/register) ---
+app.post('/api/register', async (req, res) => { // Tornar a função assíncrona
     const { username, email, password } = req.body;
-    const db = JSON.parse(fs.readFileSync(DB_FILE));
 
-    // Verifica se já existe
-    if (db.find(u => u.email === email)) {
-        return res.status(400).json({ message: 'Email já cadastrado!' });
-    }
+    // A. *Opcional e Recomendado*: Hashing da Senha com bcrypt (Você já tem o pacote!)
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    // Use 'password' diretamente por enquanto, mas considere implementar o hash!
 
-    // Cria novo usuário
-    const newUser = { id: Date.now(), username, email, password };
-    db.push(newUser);
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
-
-    res.status(201).json({ message: 'Usuário criado com sucesso!', user: newUser });
-});
-
-// Rota de login
-app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-    const db = JSON.parse(fs.readFileSync(DB_FILE));
-
-    const user = db.find(u => u.email === email && u.password === password);
-    if (!user) {
-        return res.status(401).json({ message: 'Email ou senha incorretos!' });
-    }
-
-    res.json({ message: 'Login bem-sucedido!', user });
-});
-
-// Inicia servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
-
-// server.js (Adicione após a rota de login)
-
-// Rota para LER (READ) todos os usuários
-app.get('/api/users', (req, res) => {
+    // B. Verificar se o e-mail já existe
     try {
-        const db = JSON.parse(fs.readFileSync(DB_FILE));
-        // Mapeia para remover a senha antes de enviar para o frontend por segurança
-        const usersSafe = db.map(({ id, username, email }) => ({ id, username, email }));
-        res.json(usersSafe);
+        const checkEmail = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        
+        if (checkEmail.rows.length > 0) {
+            return res.status(400).json({ message: 'Email já cadastrado!' });
+        }
+
+        // C. Inserir novo usuário
+        const result = await pool.query(
+            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email',
+            [username, email, password]
+        );
+
+        const newUser = result.rows[0];
+
+        res.status(201).json({ message: 'Usuário criado com sucesso!', user: newUser });
     } catch (error) {
-        console.error("Erro ao ler banco de dados:", error);
+        console.error("Erro no registro:", error);
+        res.status(500).json({ message: 'Erro interno do servidor ao registrar.' });
+    }
+});
+
+
+// --- Rota de Login (/api/login) ---
+app.post('/api/login', async (req, res) => { // Tornar a função assíncrona
+    const { email, password } = req.body;
+    
+    try {
+        // A. Buscar usuário pelo email
+        const result = await pool.query('SELECT id, username, email, password FROM users WHERE email = $1', [email]);
+        
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: 'Email ou senha incorretos!' });
+        }
+
+        const user = result.rows[0];
+
+        // B. Comparar a senha (Sem bcrypt: comparação direta)
+        // Se você usasse bcrypt: const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = user.password === password; // <--- Comparação direta sem hash
+
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Email ou senha incorretos!' });
+        }
+
+        // C. Retornar dados (removendo a senha)
+        const { password: _, ...userSafe } = user;
+
+        res.json({ message: 'Login bem-sucedido!', user: userSafe });
+
+    } catch (error) {
+        console.error("Erro no login:", error);
+        res.status(500).json({ message: 'Erro interno do servidor ao logar.' });
+    }
+});
+
+
+// --- Rota de Usuários (/api/users) - Exemplo de GET ---
+app.get('/api/users', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, username, email FROM users');
+        res.json(result.rows);
+    } catch (error) {
+        console.error("Erro ao buscar usuários:", error);
         res.status(500).json({ message: 'Erro interno do servidor.' });
     }
 });
 
-// Rota para LER (READ) um usuário específico por ID
-app.get('/api/users/:id', (req, res) => {
-    const userId = parseInt(req.params.id);
-    const db = JSON.parse(fs.readFileSync(DB_FILE));
-    
-    const user = db.find(u => u.id === userId);
-    
-    if (!user) {
-        return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
+// ... outras rotas (PUT/DELETE) seguiriam o mesmo padrão Async/Await + pool.query() ...
 
-    // Retorna dados seguros
-    const { id, username, email } = user;
-    res.json({ id, username, email });
-});
-
-// server.js (Adicione após as rotas GET)
-
-// Rota para ATUALIZAR (UPDATE) um usuário por ID
-app.put('/api/users/:id', (req, res) => {
-    const userId = parseInt(req.params.id);
-    const { username, email, password } = req.body; // Campos a serem atualizados
-    let db = JSON.parse(fs.readFileSync(DB_FILE));
-    
-    const userIndex = db.findIndex(u => u.id === userId);
-    
-    if (userIndex === -1) {
-        return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
-
-    // Lógica de atualização
-    db[userIndex] = {
-        ...db[userIndex], // Mantém dados antigos (ex: ID)
-        username: username || db[userIndex].username,
-        email: email || db[userIndex].email,
-        password: password || db[userIndex].password // **Atenção: A senha deve ser criptografada aqui!**
-    };
-    
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
-
-    res.json({ message: 'Usuário atualizado com sucesso!', user: db[userIndex] });
-});
-
-// server.js (Adicione após as rotas PUT)
-
-// Rota para DELETAR (DELETE) um usuário por ID
-app.delete('/api/users/:id', (req, res) => {
-    const userId = parseInt(req.params.id);
-    let db = JSON.parse(fs.readFileSync(DB_FILE));
-    
-    const initialLength = db.length;
-    // Filtra o array, mantendo apenas os usuários que NÃO têm o ID fornecido
-    db = db.filter(u => u.id !== userId);
-    
-    if (db.length === initialLength) {
-        return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
-
-    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
-
-    res.json({ message: 'Usuário deletado com sucesso!' });
+app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

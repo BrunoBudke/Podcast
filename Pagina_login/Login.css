@@ -1,0 +1,95 @@
+
+
+:root {
+    
+    --cor-fundo-escuro: #0a192f; 
+    --cor-primaria: #64ffda; 
+    --cor-texto-claro: #ccd6f6;
+    --cor-card-fundo: rgba(25, 41, 69, 0.8); 
+}
+
+body {
+   
+    background-color: var(--cor-fundo-escuro);
+    color: var(--cor-texto-claro);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+img {
+    
+    width: 150px;
+    height: auto;
+    margin-bottom: 30px;
+    border-radius: 50%; 
+}
+
+#loginForm {
+    background-color: var(--cor-card-fundo);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 60px rgba(0, 0, 0, 0.3); 
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+}
+
+#loginForm input {
+    padding: 12px;
+    border: 1px solid var(--cor-primaria);
+    border-radius: 5px;
+    background-color: #112240;
+    color: var(--cor-texto-claro);
+    transition: border-color 0.3s;
+}
+
+#loginForm input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#loginForm input:focus {
+    border-color: var(--cor-texto-claro);
+    outline: none;
+}
+
+#loginForm button {
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+#loginForm button[type="submit"] {
+    /* Botão primário (Login) */
+    background-color: var(--cor-primaria);
+    color: var(--cor-fundo-escuro); 
+    margin-top: 5px;
+}
+
+#loginForm button[type="submit"]:hover {
+    background-color: #52e8c2; 
+}
+
+#loginForm button[type="button"] {
+    background-color: transparent;
+    color: var(--cor-primaria);
+    border: 1px solid var(--cor-primaria);
+}
+
+#loginForm button[type="button"]:hover {
+    background-color: rgba(100, 255, 218, 0.1); 
+}
+
+#loginForm button:active {
+    transform: scale(0.98);
+}

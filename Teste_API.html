@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de API REST (CRUD) - Usuários</title>
+    <link rel="stylesheet" href="teste_Api.css">
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de API REST do Projeto Podcast 🧙</h1>
+        
+        <div class="api-info">
+            Este painel permite testar as operações **CRUD** (`POST`, `GET`, `PUT`, `DELETE`) nas rotas `/api/users` e `/api/register`.
+        </div>
+
+        <h2>1. Criar Usuário (POST)</h2>
+        <form id="createUserForm">
+            <div class="form-group"><input type="text" id="newUsername" placeholder="Nome de Usuário" required></div>
+            <div class="form-group"><input type="email" id="newEmail" placeholder="Email" required></div>
+            <div class="form-group"><input type="password" id="newPassword" placeholder="Senha" required></div>
+            <button type="submit" class="btn-create">Criar Usuário (POST)</button>
+        </form>
+
+        <hr>
+
+        <h2>2. Atualizar Usuário (PUT)</h2>
+        <form id="updateUserForm">
+            <div class="form-group"><input type="number" id="updateId" placeholder="ID do Usuário" required></div>
+            <div class="form-group"><input type="text" id="updateUsername" placeholder="Novo Nome (Opcional)"></div>
+            <div class="form-group"><input type="email" id="updateEmail" placeholder="Novo Email (Opcional)"></div>
+            <button type="submit" class="btn-update">Atualizar Usuário (PUT)</button>
+        </form>
+        
+        <hr>
+
+        <h2>3. Lista de Usuários (GET)</h2>
+        <button onclick="fetchUsers()" class="btn-read">Recarregar Lista (GET)</button>
+        <ul id="usersList">
+            <li>Nenhum usuário carregado.</li>
+        </ul>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:3000/api';
+        const usersList = document.getElementById('usersList');
+
+       
+        async function fetchUsers() {
+            usersList.innerHTML = '<li>Carregando usuários...</li>';
+            try {
+                const response = await fetch(`${BACKEND_URL}/users`);
+                if (!response.ok) throw new Error('Falha ao buscar usuários');
+                
+                const users = await response.json();
+                
+                usersList.innerHTML = ''; 
+                if (users.length === 0) {
+                    usersList.innerHTML = '<li>Nenhum usuário cadastrado.</li>';
+                    return;
+                }
+                
+                users.forEach(user => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <div class="list-details">
+                            <strong>ID: ${user.id}</strong> | 
+                            Nome: ${user.username} | 
+                            Email: ${user.email}
+                        </div>
+                        <div class="list-actions">
+                            <button class="btn-delete" onclick="deleteUser(${user.id})">Deletar (DELETE)</button>
+                        </div>
+                    `;
+                    usersList.appendChild(listItem);
+                });
+
+            } catch (error) {
+                console.error('Erro ao buscar usuários:', error);
+                usersList.innerHTML = '<li>Erro ao carregar a lista de usuários. Verifique se o servidor está rodando.</li>';
+            }
+        }
+        
+        
+        document.getElementById('createUserForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const username = document.getElementById('newUsername').value;
+            const email = document.getElementById('newEmail').value;
+            const password = document.getElementById('newPassword').value;
+
+            const dados = { username, email, password };
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('🎉 Usuário criado com sucesso! ID: ' + data.user.id);
+                    document.getElementById('createUserForm').reset(); 
+                    fetchUsers(); 
+                } else {
+                    alert('Falha ao criar usuário: ' + data.message);
+                }
+
+            } catch (error) {
+                console.error('Erro de Rede/Servidor:', error);
+                alert('Erro ao tentar conectar com o Servidor Mágico.');
+            }
+        });
+
+       
+        document.getElementById('updateUserForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const id = document.getElementById('updateId').value;
+            const username = document.getElementById('updateUsername').value;
+            const email = document.getElementById('updateEmail').value;
+
+            
+            const dados = {};
+            if (username) dados.username = username;
+            if (email) dados.email = email;
+
+            if (Object.keys(dados).length === 0) {
+                 return alert("Preencha pelo menos um campo (Nome ou Email) para atualizar.");
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/users/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Usuário ID ' + id + ' atualizado com sucesso!');
+                    document.getElementById('updateUserForm').reset(); 
+                    fetchUsers(); 
+                } else {
+                    alert('Falha ao atualizar: ' + data.message);
+                }
+
+            } catch (error) {
+                console.error('Erro de Rede/Servidor:', error);
+                alert('Erro ao tentar conectar com o Servidor Mágico.');
+            }
+        });
+        
+        
+        async function deleteUser(id) {
+            if (!confirm(`Tem certeza que deseja excluir o usuário com ID ${id}?`)) return;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/users/${id}`, {
+                    method: 'DELETE',
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    fetchUsers(); 
+                } else {
+                    alert('Falha ao deletar: ' + data.message);
+                }
+
+            } catch (error) {
+                console.error('Erro de Rede/Servidor:', error);
+                alert('Erro ao tentar conectar com o Servidor.');
+            }
+        }
+
+
+        
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+    </script>
+</body>
+</html>

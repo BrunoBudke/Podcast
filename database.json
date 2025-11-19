@@ -1,3 +1,24 @@
 [
+<<<<<<< HEAD
 
+=======
+  {
+    "id": 1762190814063,
+    "username": "a",
+    "email": "123",
+    "password": "123"
+  },
+  {
+    "id": 1762192441609,
+    "username": "a",
+    "email": "a",
+    "password": "a"
+  },
+  {
+    "id": 1762377636914,
+    "username": "123",
+    "email": "1234",
+    "password": "1223445"
+  }
+>>>>>>> 10968bb855ce27c250df46ff3d2ce777fbb5947b
 ]

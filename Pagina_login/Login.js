@@ -1,6 +1,9 @@
 
+<<<<<<< HEAD
 // Login.js
 
+=======
+>>>>>>> 10968bb855ce27c250df46ff3d2ce777fbb5947b
 const BACKEND_URL = 'http://localhost:3000/api';
 
 async function handleLogin(event) {
@@ -25,11 +28,15 @@ async function handleLogin(event) {
         if (response.ok) {
            
             console.log('Login OK!', data.user);
+<<<<<<< HEAD
             alert(`Bem-vindo, ${data.user.username}! Você será redirecionado para a Escola de Magia do Python!`);
            
             
            // Caso o Live Server esteja em TRABALHOS/
 window.location.href = '/Projeto_Podcast/Podcast.html'; 
+=======
+            alert(`Bem-vindo, ${data.user.username}!`);
+>>>>>>> 10968bb855ce27c250df46ff3d2ce777fbb5947b
            
         } else {
            
